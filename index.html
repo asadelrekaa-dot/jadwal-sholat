@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Sholat Masjid Al-Barkah</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    transition: background-image 1s ease-in-out;
+}
+
+.overlay {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Konten atas */
+.top-content {
+    flex: 1;
+}
+
+/* Konten bawah nempel ke bawah */
+.bottom-content {
+    margin-top: auto;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,.6);
+    padding: 15px 20px;
+    border-radius: 12px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-left h1 {
+    font-size: 22px;
+}
+
+.header-left p {
+    font-size: 14px;
+    opacity: .9;
+}
+
+.mosque-icon {
+    font-size: 46px;
+    color: #d4af37; /* emas */
+    text-shadow: 0 0 10px rgba(0,0,0,.6);
+}
+
+.clock-box {
+    background: #1f1f1f;
+    padding: 10px 18px;
+    border-radius: 12px;
+    text-align: right;
+}
+
+.clock {
+    font-size: 32px;
+    color: #ff9f1c;
+    font-weight: bold;
+}
+
+.date {
+    font-size: 14px;
+}
+
+/* INFO */
+.info-left,
+.info-right {
+    background: rgba(0,0,0,.45);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #fff;
+    white-space: nowrap;
+}
+
+/* INFO KIRI */
+.info-left {
+    float: left;
+    margin: 0 0 15px 0; /* jarak ke SHOLAT */
+    border-left: 3px solid #ff9f1c;
+}
+
+/* INFO KANAN */
+.info-right {
+    float: right;
+    margin: 0 0 15px 0; /* jarak ke SHOLAT */
+    border-right: 3px solid #ff9f1c;
+    text-align: right;
+}
+
+
+
+/* SHOLAT */
+.sholat-grid {
+    clear: both;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.sholat {
+    background: rgba(0,0,0,.65);
+    border-radius: 12px;
+    text-align: center;
+    padding: 12px;
+}
+
+.sholat h3 {
+    font-size: 16px;
+}
+
+.sholat span {
+    display: block;
+    margin-top: 8px;
+    font-size: 22px;
+    color: #ff9f1c;
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 15px;
+    background: rgba(0,0,0,.75);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+      .mosque-icon {
+        font-size: 36px;
+    }
+
+    .sholat-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    /* INFO kiri & kanan */
+    .info-left,
+    .info-right {
+        float: none;              /* PENTING */
+        margin: 8px auto;
+        display: block;
+        text-align: center;
+        border: none;
+    }
+}
+</style>
+</head>
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+<body>
+<div class="overlay">
+ <div class="top-content">
+    <!-- HEADER -->
+    <div class="header">
+<div class="header-left">
+    <i class="fa-solid fa-mosque mosque-icon"></i>
+
+    <div>
+        <h1>Masjid Al-Barkah</h1>
+        <p>Jl. Alternatif Cibubur No.74, Cileungsi, Kec. Cileungsi, Kabupaten Bogor, Jawa Barat 16820</p>
+    </div>
+</div>
+
+        <div class="clock-box">
+            <div class="clock" id="clock">00:00:00</div>
+            <div class="date" id="date"></div>
+        </div>
+    </div>
+ </div>
+
+<div class="bottom-content">
+
+    <!-- INFO KIRI -->
+    <div class="info-left">
+        ⏳ Menuju Ramadhan:
+        <b id="ramadhanCountdown">-</b>
+    </div>
+
+    <!-- INFO KANAN -->
+    <div class="info-right">
+        🕌 Menuju Sholat Terdekat:
+        <b id="nextPrayerCountdown">-</b>
+    </div>
+
+    <!-- SHOLAT -->
+    <div class="sholat-grid">
+        <div class="sholat"><h3>Subuh</h3><span id="Fajr">--:--</span></div>
+        <div class="sholat"><h3>Syuruq</h3><span id="Sunrise">--:--</span></div>
+        <div class="sholat"><h3>Dzuhur</h3><span id="Dhuhr">--:--</span></div>
+        <div class="sholat"><h3>Ashar</h3><span id="Asr">--:--</span></div>
+        <div class="sholat"><h3>Maghrib</h3><span id="Maghrib">--:--</span></div>
+        <div class="sholat"><h3>Isya</h3><span id="Isha">--:--</span></div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <marquee behavior="scroll" scrollamount="4">
+            📖 Jadwal Kajian Senin: Ust. Fikri – “Persiapan Menuju Bulan Suci Ramadhan” |
+            🕌 Masjid Al-Barkah Jonggol
+        </marquee>
+    </div>
+
+</div>
+
+</div>
+
+<script>
+/* REAL TIME CLOCK */
+function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').innerText =
+        now.toLocaleTimeString('id-ID');
+    document.getElementById('date').innerText =
+        now.toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* BACKGROUND ROTATE */
+const bgDesktop = [
+    'asset/bg/masjid1.jpg',
+    'asset/bg/masjid2.jpg',
+    'asset/bg/masjid3.jpg'
+];
+const bgMobile = [
+    'asset/bg/masjidhp1.jpg',
+    'asset/bg/masjidhp2.jpg',
+    'asset/bg/masjidhp3.jpg'
+];
+
+let bgIndex = 0;
+function changeBackground() {
+    const bg = window.innerWidth < 768 ? bgMobile : bgDesktop;
+    document.body.style.backgroundImage = `url(${bg[bgIndex]})`;
+    bgIndex = (bgIndex + 1) % bg.length;
+}
+changeBackground();
+setInterval(changeBackground, 30000);
+
+/* JADWAL SHOLAT API (JONGGOL) */
+let prayerTimes = {};
+
+fetch('https://api.aladhan.com/v1/timingsByCity?city=Jonggol&country=Indonesia&method=11')
+.then(res => res.json())
+.then(data => {
+    prayerTimes = data.data.timings;
+    for (let key in prayerTimes) {
+        if (document.getElementById(key)) {
+            document.getElementById(key).innerText = prayerTimes[key];
+        }
+    }
+});
+
+/* COUNTDOWN SHOLAT TERDEKAT */
+function nextPrayerCountdown() {
+    if (!prayerTimes.Fajr) return;
+
+    const now = new Date();
+    let nearest = null;
+    let name = '';
+
+    Object.entries({
+        Subuh: prayerTimes.Fajr,
+        Dzuhur: prayerTimes.Dhuhr,
+        Ashar: prayerTimes.Asr,
+        Maghrib: prayerTimes.Maghrib,
+        Isya: prayerTimes.Isha
+    }).forEach(([n, t]) => {
+        const [h, m] = t.split(':');
+        const time = new Date();
+        time.setHours(h, m, 0);
+        if (time > now && (!nearest || time < nearest)) {
+            nearest = time;
+            name = n;
+        }
+    });
+
+    if (!nearest) return;
+
+    const diff = nearest - now;
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor(diff % 3600000 / 60000);
+    const s = Math.floor(diff % 60000 / 1000);
+
+    document.getElementById('nextPrayerCountdown').innerText =
+        `${name} ${h}j ${m}m ${s}d`;
+}
+setInterval(nextPrayerCountdown, 1000);
+
+/* COUNTDOWN RAMADHAN */
+function ramadhanCountdown() {
+    const now = new Date();
+    const year = now.getFullYear();
+    let ramadhan;
+
+    // Acuan Ramadhan (Indonesia / Kemenag)
+    if (year === 2025) {
+        ramadhan = new Date('2025-03-01T00:00:00');
+    } else if (year === 2026) {
+        ramadhan = new Date('2026-02-18T00:00:00');
+    } else {
+        // fallback aman
+        ramadhan = new Date(year, 1, 18);
+    }
+
+    // Jika Ramadhan tahun ini sudah lewat → hitung tahun depan
+    if (now > ramadhan) {
+        ramadhan.setFullYear(year + 1);
+    }
+
+    const diff = ramadhan - now;
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+    const el = document.getElementById('ramadhanCountdown');
+
+    if (days <= 0 && days >= -30) {
+        el.innerText = 'Selamat Menunaikan Ibadah Puasa';
+    } else {
+        el.innerText = days + ' hari';
+    }
+}
+
+// update pertama + refresh tiap jam
+ramadhanCountdown();
+setInterval(ramadhanCountdown, 60 * 60 * 1000);
+</script>
+
+</body>
+</html>
