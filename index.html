@@ -291,40 +291,51 @@ fetch('https://api.aladhan.com/v1/timingsByCity?city=Jonggol&country=Indonesia&m
     }
 });
 
-/* COUNTDOWN SHOLAT TERDEKAT */
+/* COUNTDOWN SHOLAT TERDEKAT CMIIW*/
 function nextPrayerCountdown() {
     if (!prayerTimes.Fajr) return;
 
     const now = new Date();
-    let nearest = null;
-    let name = '';
 
-    Object.entries({
-        Subuh: prayerTimes.Fajr,
-        Dzuhur: prayerTimes.Dhuhr,
-        Ashar: prayerTimes.Asr,
-        Maghrib: prayerTimes.Maghrib,
-        Isya: prayerTimes.Isha
-    }).forEach(([n, t]) => {
-        const [h, m] = t.split(':');
-        const time = new Date();
-        time.setHours(h, m, 0);
-        if (time > now && (!nearest || time < nearest)) {
-            nearest = time;
-            name = n;
+    const prayers = [
+        { name: 'Subuh', time: prayerTimes.Fajr },
+        { name: 'Dzuhur', time: prayerTimes.Dhuhr },
+        { name: 'Ashar', time: prayerTimes.Asr },
+        { name: 'Maghrib', time: prayerTimes.Maghrib },
+        { name: 'Isya', time: prayerTimes.Isha }
+    ];
+
+    let nearest = null;
+    let prayerName = '';
+
+    prayers.forEach(p => {
+        // ambil HH:MM saja (buang WIB)
+        const clean = p.time.split(' ')[0];
+        const [h, m] = clean.split(':').map(Number);
+
+        const t = new Date();
+        t.setHours(h, m, 0, 0);
+
+        // kalau sudah lewat → anggap besok
+        if (t <= now) {
+            t.setDate(t.getDate() + 1);
+        }
+
+        if (!nearest || t < nearest) {
+            nearest = t;
+            prayerName = p.name;
         }
     });
 
-    if (!nearest) return;
-
     const diff = nearest - now;
     const h = Math.floor(diff / 3600000);
-    const m = Math.floor(diff % 3600000 / 60000);
-    const s = Math.floor(diff % 60000 / 1000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
 
     document.getElementById('nextPrayerCountdown').innerText =
-        `${name} ${h}j ${m}m ${s}d`;
+        `${prayerName} ${h}j ${m}m ${s}d`;
 }
+
 setInterval(nextPrayerCountdown, 1000);
 
 /* COUNTDOWN RAMADHAN */
